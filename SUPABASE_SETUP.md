@@ -62,9 +62,9 @@ END;
 $$ language 'plpgsql';
 
 -- Trigger to automatically update updated_at
-CREATE TRIGGER update_accounts_updated_at 
-    BEFORE UPDATE ON accounts 
-    FOR EACH ROW 
+CREATE TRIGGER update_accounts_updated_at
+    BEFORE UPDATE ON accounts
+    FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 ```
 
@@ -81,11 +81,11 @@ BEGIN
     WHILE NOT is_unique LOOP
         -- Generate random 10-digit number
         account_num := LPAD(FLOOR(RANDOM() * 10000000000)::TEXT, 10, '0');
-        
+
         -- Check if it's unique
         SELECT NOT EXISTS(SELECT 1 FROM accounts WHERE account_number = account_num) INTO is_unique;
     END LOOP;
-    
+
     RETURN account_num;
 END;
 $$ LANGUAGE plpgsql;
@@ -106,7 +106,7 @@ $$ LANGUAGE plpgsql;
 4. Go to Credentials > Create Credentials > OAuth 2.0 Client IDs
 5. Set application type to "Web application"
 6. Add authorized redirect URIs:
-   - `https://jcdwsviftdjcmpdzwvnh.supabase.co/auth/v1/callback`
+   - `https://.supabase.co/auth/v1/callback`
    - `http://localhost:3000/auth/callback` (for development)
 
 ## Step 6: Enable Realtime (Optional)
@@ -125,7 +125,7 @@ You can test your setup by running these queries:
 SELECT generate_account_number();
 
 -- Test inserting a sample account (replace with actual user_id)
-INSERT INTO accounts (user_id, account_number, balance) 
+INSERT INTO accounts (user_id, account_number, balance)
 VALUES ('your-user-id-here', generate_account_number(), 1000.00);
 
 -- Test querying accounts
@@ -135,11 +135,6 @@ SELECT * FROM accounts;
 ## Environment Variables
 
 Make sure your `.env.local` file contains:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://jcdwsviftdjcmpdzwvnh.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjZHdzdmlmdGRqY21wZHp3dm5oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyMzY1NzMsImV4cCI6MjA3MTgxMjU3M30.h57QkgMSiEhPffxtnpPHXv3abYcGWJE1dHhK--tW5ZY
-```
 
 ## Troubleshooting
 
@@ -178,4 +173,3 @@ If you encounter any issues:
 2. Verify your environment variables
 3. Ensure your database schema matches the expected structure
 4. Test your RLS policies with different user scenarios
-
