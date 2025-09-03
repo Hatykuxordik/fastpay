@@ -1,0 +1,18 @@
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern lightning bolt representing fast payments -->
+  <path d="M22 4L12 18H18L10 36L28 20H20L22 4Z" fill="url(#gradient)" stroke="none"/>
+  
+  <!-- Circular accent elements for modern look -->
+  <circle cx="32" cy="8" r="3" fill="url(#gradient)" opacity="0.6"/>
+  <circle cx="8" cy="32" r="2" fill="url(#gradient)" opacity="0.4"/>
+  
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#6366F1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>
+

@@ -1,0 +1,477 @@
+@import "tailwindcss";
+
+/* CSS Custom Properties for Theme System */
+:root {
+  /* Light theme colors */
+  --color-background: #ffffff;
+  --color-foreground: #1f2937;
+  --color-muted: #f9fafb;
+  --color-muted-foreground: #6b7280;
+  --color-card: #ffffff;
+  --color-card-foreground: #1f2937;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1f2937;
+  --color-primary: #3b82f6;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f3f4f6;
+  --color-secondary-foreground: #374151;
+  --color-accent: #f3f4f6;
+  --color-accent-foreground: #374151;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #e5e7eb;
+  --color-input: #f9fafb;
+  --color-ring: #3b82f6;
+
+  /* Navigation specific colors */
+  --color-nav-background: #ffffff;
+  --color-nav-foreground: #374151;
+  --color-nav-hover: #3b82f6;
+  --color-nav-active: #1d4ed8;
+
+  /* Button colors */
+  --color-button-primary: #3b82f6;
+  --color-button-primary-hover: #2563eb;
+  --color-button-primary-foreground: #ffffff;
+  --color-button-secondary: #f3f4f6;
+  --color-button-secondary-hover: #e5e7eb;
+  --color-button-secondary-foreground: #374151;
+
+  /* Status colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+}
+
+/* Dark theme colors */
+.dark {
+  --color-background: #111827;
+  --color-foreground: #f9fafb;
+  --color-muted: #1f2937;
+  --color-muted-foreground: #9ca3af;
+  --color-card: #1f2937;
+  --color-card-foreground: #f9fafb;
+  --color-popover: #1f2937;
+  --color-popover-foreground: #f9fafb;
+  --color-primary: #3b82f6;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #374151;
+  --color-secondary-foreground: #f9fafb;
+  --color-accent: #374151;
+  --color-accent-foreground: #f9fafb;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #374151;
+  --color-input: #374151;
+  --color-ring: #3b82f6;
+
+  /* Navigation specific colors */
+  --color-nav-background: #1f2937;
+  --color-nav-foreground: #f9fafb;
+  --color-nav-hover: #60a5fa;
+  --color-nav-active: #93c5fd;
+
+  /* Button colors */
+  --color-button-primary: #3b82f6;
+  --color-button-primary-hover: #60a5fa;
+  --color-button-primary-foreground: #ffffff;
+  --color-button-secondary: #374151;
+  --color-button-secondary-hover: #4b5563;
+  --color-button-secondary-foreground: #f9fafb;
+
+  /* Status colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+}
+
+/* Base styles */
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apply theme colors to common elements */
+.bg-white {
+  background-color: var(--color-background) !important;
+}
+
+.text-gray-900 {
+  color: var(--color-foreground) !important;
+}
+
+.bg-gray-50 {
+  background-color: var(--color-muted) !important;
+}
+
+.border-gray-200 {
+  border-color: var(--color-border) !important;
+}
+
+/* Navigation styles */
+
+header {
+  background-color: var(--color-nav-background) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* Ensure navigation links are visible */
+/* nav a {
+  color: var(--color-foreground) !important;
+} */
+
+nav a:hover {
+  color: var(--color-primary) !important;
+  background-color: var(--color-muted) !important;
+}
+
+/* Form styles */
+
+nav a {
+  color: var(--color-nav-foreground);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: var(--color-nav-hover);
+  background-color: var(--color-muted);
+}
+
+nav a.active {
+  color: var(--color-nav-active);
+  background-color: var(--color-accent);
+}
+
+/* Button styles */
+button {
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background-color: var(--color-button-primary);
+  color: var(--color-button-primary-foreground);
+  padding: 0.75rem 1.5rem;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-button-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--color-button-secondary);
+  color: var(--color-button-secondary-foreground);
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-button-secondary-hover);
+}
+
+/* Input styles */
+/* input,
+textarea,
+select {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border: 1px solid var(--color-input);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+  width: 100%;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-muted-foreground) !important;
+  opacity: 1 !important;
+}
+
+/* Specific placeholder fixes for better contrast */
+/*
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+} */
+
+/* Card styles */
+.card {
+  background-color: var(--color-card);
+  color: var(--color-card-foreground);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Modal styles */
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: var(--color-popover);
+  color: var(--color-popover-foreground);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Status colors */
+.text-success {
+  color: var(--color-success);
+}
+.text-warning {
+  color: var(--color-warning);
+}
+.text-error {
+  color: var(--color-error);
+}
+.text-info {
+  color: var(--color-info);
+}
+
+.bg-success {
+  background-color: var(--color-success);
+}
+.bg-warning {
+  background-color: var(--color-warning);
+}
+.bg-error {
+  background-color: var(--color-error);
+}
+.bg-info {
+  background-color: var(--color-info);
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .mobile-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: var(--color-nav-background);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem;
+  }
+
+  .mobile-nav-menu {
+    position: fixed;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--color-nav-background);
+    border-bottom: 1px solid var(--color-border);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 40;
+  }
+
+  .mobile-nav-menu.open {
+    transform: translateY(0);
+  }
+
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .hamburger span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background-color: var(--color-nav-foreground);
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+    border-radius: 1px;
+  }
+
+  .hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+  }
+}
+
+/* App-like mobile styles */
+@media (max-width: 768px) {
+  body {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .mobile-app-container {
+    min-height: 100vh;
+    background: linear-gradient(
+      135deg,
+      var(--color-background) 0%,
+      var(--color-muted) 100%
+    );
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-nav-background);
+    border-top: 1px solid var(--color-border);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 50;
+  }
+
+  .mobile-bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    color: var(--color-muted-foreground);
+    text-decoration: none;
+    font-size: 0.75rem;
+    transition: color 0.2s ease;
+  }
+
+  .mobile-bottom-nav a.active,
+  .mobile-bottom-nav a:hover {
+    color: var(--color-nav-active);
+  }
+}
+
+/* Utility classes */
+.text-muted {
+  color: var(--color-muted-foreground);
+}
+.bg-muted {
+  background-color: var(--color-muted);
+}
+.border-default {
+  border-color: var(--color-border);
+}
+
+/* Animation utilities */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles for better accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #000000;
+    --color-foreground: #000000;
+    --color-background: #ffffff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-border: #ffffff;
+      --color-foreground: #ffffff;
+      --color-background: #000000;
+    }
+  }
+}

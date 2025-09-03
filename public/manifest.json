@@ -1,0 +1,30 @@
+{
+  "name": "Fastpay - Modern Banking Simulator",
+  "short_name": "Fastpay",
+  "description": "An interactive web app for simulating banking operations with secure authentication, real-time updates, analytics, and modern features in a user-friendly interface.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/fastpay-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/fastpay-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["finance", "productivity", "business"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
+}
+
