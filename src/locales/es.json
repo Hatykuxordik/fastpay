@@ -17,12 +17,16 @@
     "settings": "Configuración",
     "profile": "Perfil",
     "notifications": "Notificaciones",
-    "privacy": "Privacidad y Seguridad",
+    "privacy": "Privacidad",
+    "security": "Seguridad",
     "preferences": "Preferencias",
     "theme": "Tema",
     "language": "Idioma",
     "currency": "Moneda",
     "save": "Guardar",
+    "saveChanges": "Guardar Cambios",
+    "savePreferences": "Guardar Preferencias",
+    "change": "Cambiar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "edit": "Editar",
@@ -30,7 +34,26 @@
     "error": "Error",
     "success": "Éxito",
     "warning": "Advertencia",
-    "info": "Información"
+    "info": "Información",
+    "public": "Público",
+    "private": "Privado",
+    "visible": "Visible",
+    "hidden": "Oculto",
+    "data": "Datos",
+    "updatePin": "Actualizar PIN",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema",
+    "export": "Exportar",
+    "clear": "Borrar",
+    "displaySettings": "Configuración de Visualización",
+    "dataExport": "Exportación de Datos",
+    "exportUserData": "Exportar Datos de Usuario",
+    "exportUserDataDescription": "Descripción de Exportación de Datos de Usuario",
+    "clearOfflineData": "Borrar Datos sin Conexión",
+    "clearOfflineDataDescription": "Descripción de Borrar Datos sin Conexión",
+    "deleteAccount": "Eliminar Cuenta",
+    "deleteAccountDescription": "Descripción de Eliminar Cuenta"
   },
   "auth": {
     "signIn": "Iniciar Sesión",
@@ -60,7 +83,31 @@
     "totalBalance": "Saldo Total",
     "monthlySpending": "Gasto Mensual",
     "savingsGoal": "Meta de Ahorro",
-    "creditScore": "Puntuación Crediticia"
+    "creditScore": "Puntuación Crediticia",
+    "welcome": "Bienvenido de nuevo, {{name}}",
+    "account": "Cuenta",
+    "guestMode": "Modo Invitado",
+    "thisMonth": "Este Mes",
+    "expenses": "Gastos",
+    "activeLoans": "Préstamos Activos",
+    "quickActions": {
+      "transferMoney": {
+        "title": "Transferir Dinero",
+        "description": "Enviar dinero a otra cuenta"
+      },
+      "payBills": {
+        "title": "Pagar Facturas",
+        "description": "Pagar servicios y facturas"
+      },
+      "buyAirtime": {
+        "title": "Comprar Tiempo Aire",
+        "description": "Recargar crédito móvil"
+      },
+      "requestLoan": {
+        "title": "Solicitar Préstamo",
+        "description": "Solicitar un préstamo instantáneo"
+      }
+    }
   },
   "transactions": {
     "title": "Transacciones",
@@ -95,6 +142,15 @@
   "settings": {
     "title": "Configuración",
     "description": "Administra la configuración y preferencias de tu cuenta",
+    "preferences": "Preferencias",
+    "currency": "Moneda",
+    "currencyDescription": "Selecciona tu moneda preferida",
+    "language": "Idioma",
+    "languageDescription": "Selecciona tu idioma preferido",
+    "theme": "Tema",
+    "themeDescription": "Elige tu tema de aplicación preferido",
+    "lowBalanceThreshold": "Umbral de Saldo Bajo",
+    "lowBalanceThresholdDescription": "Establece un umbral para las notificaciones de saldo bajo",
     "tabs": {
       "profile": "Perfil",
       "notifications": "Notificaciones",
@@ -133,21 +189,21 @@
     "biometricAuth": "Autenticación Biométrica",
     "biometricAuthDescription": "Habilita la huella dactilar o el Face ID para un inicio de sesión más rápido y seguro",
     "changePassword": "Cambiar Contraseña",
+    "pinManagement": "Gestión de PIN",
+    "pinDescription": "Establece o cambia tu PIN de 4 dígitos para transacciones.",
+    "currentPin": "PIN Actual",
+    "newPin": "Nuevo PIN",
+    "confirmNewPin": "Confirmar Nuevo PIN",
     "currentPassword": "Contraseña Actual",
     "newPassword": "Nueva Contraseña",
     "confirmNewPassword": "Confirmar Nueva Contraseña",
     "userPreferences": "Preferencias de Usuario",
-    "themeDescription": "Elige tu tema de aplicación preferido",
     "lightMode": "Modo Claro",
     "darkMode": "Modo Oscuro",
     "systemMode": "Modo del Sistema",
-    "languageDescription": "Selecciona tu idioma preferido",
     "english": "Inglés",
     "spanish": "Español",
     "french": "Francés",
-    "currencyDescription": "Selecciona tu moneda preferida",
-    "lowBalanceThreshold": "Umbral de Saldo Bajo",
-    "lowBalanceThresholdDescription": "Establece un umbral para las notificaciones de saldo bajo",
     "dateFormat": "Formato de Fecha",
     "dateFormatDescription": "Elige tu formato de fecha preferido",
     "timeFormat": "Formato de Hora",
@@ -162,7 +218,11 @@
     "animationsEnabledDescription": "Habilitar o deshabilitar animaciones en toda la aplicación",
     "soundEnabled": "Sonido Habilitado",
     "soundEnabledDescription": "Habilitar o deshabilitar efectos de sonido para notificaciones y acciones",
-    "savePreferences": "Guardar Preferencias"
+    "savePreferences": "Guardar Preferencias",
+    "analyticsCollection": "Recopilación de Análisis",
+    "analyticsCollectionDescription": "Permítenos recopilar datos de uso anónimos para mejorar nuestros servicios",
+    "confirmDeleteAccount": "Confirmar Eliminar Cuenta",
+    "deleteAccountWarning": "Esta acción no se puede deshacer. Todos tus datos serán eliminados permanentemente."
   },
   "currency": {
     "usd": "Dólar Estadounidense",
@@ -191,32 +251,5 @@
     "deleted": "¡Elemento eliminado exitosamente!",
     "updated": "¡Información actualizada exitosamente!",
     "created": "¡Elemento creado exitosamente!"
-  },
-  "dashboard": {
-    "welcome": "Bienvenido de nuevo, {{name}}",
-    "account": "Cuenta",
-    "guestMode": "Modo Invitado",
-    "totalBalance": "Saldo Total",
-    "thisMonth": "Este Mes",
-    "expenses": "Gastos",
-    "activeLoans": "Préstamos Activos",
-    "quickActions": {
-      "transferMoney": {
-        "title": "Transferir Dinero",
-        "description": "Enviar dinero a otra cuenta"
-      },
-      "payBills": {
-        "title": "Pagar Facturas",
-        "description": "Pagar servicios y facturas"
-      },
-      "buyAirtime": {
-        "title": "Comprar Tiempo Aire",
-        "description": "Recargar crédito móvil"
-      },
-      "requestLoan": {
-        "title": "Solicitar Préstamo",
-        "description": "Solicitar un préstamo instantáneo"
-      }
-    }
   }
 }
