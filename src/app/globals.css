@@ -461,7 +461,7 @@ select:focus {
 }
 
 /* Override specific Tailwind classes with theme colors */
-.dark .bg-gray-800,
+/* .dark .bg-gray-800,
 .bg-gray-800 {
   background-color: var(--color-card) !important;
 }
@@ -484,7 +484,7 @@ select:focus {
 .dark .border-gray-700,
 .border-gray-700 {
   border-color: var(--color-border) !important;
-}
+} */
 
 /* Animation utilities */
 .fade-in {

@@ -66,7 +66,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
 
   return (
     <>
-      <header className="bg-theme-card border-b border-theme sticky top-0 z-50">
+      <header className="bg-theme-card border-b border-theme fixed md:sticky top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 md:h-16">
             {/* Mobile Menu Button */}
@@ -96,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
                     className="h-8 w-8"
                   />
                 </div>
-                <span className="text-xl font-bold text-theme-foreground hidden sm:block">
+                <span className="text-xl font-bold text-theme-foreground">
                   <span className="text-blue-600">ast</span>pay
                 </span>
               </Link>
@@ -261,19 +261,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
             className="fixed inset-y-0 left-0 w-64 bg-theme-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 border-b border-theme">
-              <div className="flex items-center space-x-3">
-                <Image
-                  src="/fastpay-logo.svg"
-                  alt="Fastpay"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8"
-                />
-                <span className="text-lg font-bold text-theme-card-foreground">
-                  Fastpay
-                </span>
-              </div>
+            <div className="flex items-center justify-between p-4 border-theme">
               <button
                 onClick={toggleMobileMenu}
                 className="p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted"

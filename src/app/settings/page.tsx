@@ -292,16 +292,16 @@ export default function SettingsPage() {
   };
 
   const tabs = [
-    { id: "profile", label: t("settings.tabs.profile"), icon: User },
+    { id: "profile", label: t("common.profile"), icon: User },
     {
       id: "notifications",
-      label: t("settings.tabs.notifications"),
+      label: t("common.notifications"),
       icon: Bell,
     },
-    { id: "privacy", label: t("settings.tabs.privacy"), icon: Shield },
-    { id: "security", label: t("settings.tabs.security"), icon: Shield },
-    { id: "preferences", label: t("settings.tabs.preferences"), icon: Palette },
-    { id: "data", label: t("settings.tabs.data"), icon: Download },
+    { id: "privacy", label: t("common.privacy"), icon: Shield },
+    { id: "security", label: t("common.security"), icon: Shield },
+    { id: "preferences", label: t("common.preferences"), icon: Palette },
+    { id: "data", label: t("common.data"), icon: Download },
   ];
 
   const supportedCurrencies = [
@@ -335,8 +335,8 @@ export default function SettingsPage() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
                       activeTab === tab.id
-                        ? "bg-gray-100 text-gray-800 dark:text-gray-100 dark:bg-gray-800"
-                        : "text-gray-300 dark:text-gray-500 dark:hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-400"
+                        ? "bg-gray-800 text-gray-100 dark:text-gray-800 dark:bg-gray-100"
+                        : "text-gray-300 dark:text-gray-500 dark:hover:text-gray-50 hover:bg-gray-100 dark:hover:bg-gray-400"
                     }`}
                   >
                     <tab.icon className="h-5 w-5" />
@@ -421,10 +421,10 @@ export default function SettingsPage() {
                       <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="font-medium text-blue-900 dark:text-blue-100">
+                            <h3 className="font-medium text-background dark:text-foreground">
                               {t("settings.browserNotifications")}
                             </h3>
-                            <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                            <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
                               {t("settings.status")}:{" "}
                               {permission === "granted"
                                 ? t("settings.enabled")
@@ -502,7 +502,7 @@ export default function SettingsPage() {
                 {activeTab === "privacy" && (
                   <div className="p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                      {t("settings.privacySecurity")}
+                      {t("common.privacy")}
                     </h2>
                     <div className="space-y-6">
                       <div className="space-y-4">
@@ -647,7 +647,7 @@ export default function SettingsPage() {
                 {activeTab === "security" && (
                   <div className="p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                      {t("settings.security")}
+                      {t("common.security")}
                     </h2>
                     <div className="space-y-6">
                       <div>
@@ -701,7 +701,7 @@ export default function SettingsPage() {
                           className="mt-6"
                         >
                           <Save className="h-4 w-4 mr-2" />
-                          {t("settings.updatePin")}
+                          {t("common.updatePin")}
                         </Button>
                       </div>
                       <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
@@ -917,7 +917,7 @@ export default function SettingsPage() {
                       </div>
                       <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                         <h3 className="font-medium text-gray-900 dark:text-white mb-4">
-                          {t("settings.displaySettings")}
+                          {t("common.displaySettings")}
                         </h3>
                         <div className="space-y-4">
                           <div className="flex items-center justify-between">
@@ -1035,16 +1035,16 @@ export default function SettingsPage() {
                 {activeTab === "data" && (
                   <div className="p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                      {t("settings.dataExport")}
+                      {t("common.dataExport")}
                     </h2>
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="font-medium text-gray-900 dark:text-white">
-                            {t("settings.exportUserData")}
+                            {t("common.exportUserData")}
                           </label>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {t("settings.exportUserDataDescription")}
+                            {t("common.exportUserDataDescription")}
                           </p>
                         </div>
                         <Button onClick={exportData}>
@@ -1055,10 +1055,10 @@ export default function SettingsPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="font-medium text-gray-900 dark:text-white">
-                            {t("settings.clearOfflineData")}
+                            {t("common.clearOfflineData")}
                           </label>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {t("settings.clearOfflineDataDescription")}
+                            {t("common.clearOfflineDataDescription")}
                           </p>
                         </div>
                         <Button
@@ -1072,10 +1072,10 @@ export default function SettingsPage() {
                       <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
                         <div>
                           <label className="font-medium text-red-600 dark:text-red-400">
-                            {t("settings.deleteAccount")}
+                            {t("common.deleteAccount")}
                           </label>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {t("settings.deleteAccountDescription")}
+                            {t("common.deleteAccountDescription")}
                           </p>
                         </div>
                         <Button

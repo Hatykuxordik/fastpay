@@ -38,7 +38,22 @@
     "public": "Public",
     "private": "Private",
     "visible": "Visible",
-    "hidden": "Hidden"
+    "hidden": "Hidden",
+    "data": "Data",
+    "updatePin": "Update Pin",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "export": "Export",
+    "clear": "Clear",
+    "displaySettings": "Display Settings",
+    "dataExport": "Data Export",
+    "exportUserData": "Export User Data",
+    "exportUserDataDescription": "Export User Data Description",
+    "clearOfflineData": "Clear Offline Data",
+    "clearOfflineDataDescription": "Clear Offline Data Description",
+    "deleteAccount": "Delete Account",
+    "deleteAccountDescription": "Delete Account Description"
   },
   "auth": {
     "signIn": "Sign In",
