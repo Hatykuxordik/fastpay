@@ -265,14 +265,14 @@ export default function SettingsPage() {
 
   return (
     <Layout user={user}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-theme-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-bold text-theme-foreground">
               {t("settings.title")}
             </h1>
-            <p className="text-gray-400 dark:text-gray-800 mt-2">
+            <p className="text-theme-muted mt-2">
               {t("settings.description")}
             </p>
           </div>
@@ -287,8 +287,8 @@ export default function SettingsPage() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
                       activeTab === tab.id
-                        ? "bg-gray-100  text-gray-800 dark:text-gray-100 dark:bg-gray-800"
-                        : "text-gray-300 dark:text-gray-500 dark:hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-400"
+                        ? "bg-theme-muted text-theme-foreground"
+                        : "text-theme-muted hover:text-theme-foreground hover:bg-theme-muted"
                     }`}
                   >
                     <tab.icon className="h-5 w-5" />
@@ -300,11 +300,11 @@ export default function SettingsPage() {
 
             {/* Content */}
             <div className="lg:col-span-3">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+              <div className="bg-theme-card rounded-lg shadow-sm border border-theme">
                 {/* Profile Tab */}
                 {activeTab === "profile" && (
                   <div className="p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                    <h2 className="text-xl font-semibold text-theme-card-foreground mb-6">
                       {t("settings.profileInfo")}
                     </h2>
 
@@ -413,10 +413,10 @@ export default function SettingsPage() {
                               className="flex items-center justify-between"
                             >
                               <div>
-                                <label className="font-medium text-gray-900 dark:text-white capitalize">
+                                <label className="font-medium text-theme-card-foreground capitalize">
                                   {t(`settings.${key}Notifications`)}
                                 </label>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                <p className="text-sm text-theme-muted">
                                   {key === "lowBalance" &&
                                     t("settings.lowBalanceDescription")}
                                   {key === "transactions" &&
@@ -444,7 +444,7 @@ export default function SettingsPage() {
                                   }
                                   className="sr-only peer"
                                 />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                <div className="w-11 h-6 bg-theme-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-theme after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                               </label>
                             </div>
                           )
@@ -464,7 +464,7 @@ export default function SettingsPage() {
                 {/* Privacy Tab */}
                 {activeTab === "privacy" && (
                   <div className="p-6">
-                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                    <h2 className="text-xl font-semibold text-theme-card-foreground mb-6">
                       {t("settings.privacySecurity")}
                     </h2>
 
@@ -473,10 +473,10 @@ export default function SettingsPage() {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <label className="font-medium text-gray-900 dark:text-white">
+                            <label className="font-medium text-theme-card-foreground">
                               {t("settings.profileVisibility")}
                             </label>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-theme-muted">
                               {t("settings.profileVisibilityDescription")}
                             </p>
                           </div>
@@ -489,7 +489,7 @@ export default function SettingsPage() {
                                 e.target.value
                               )
                             }
-                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                            className="px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme-card-foreground"
                           >
                             <option value="public">{t("common.public")}</option>
                             <option value="private">
@@ -500,10 +500,10 @@ export default function SettingsPage() {
 
                         <div className="flex items-center justify-between">
                           <div>
-                            <label className="font-medium text-gray-900 dark:text-white">
+                            <label className="font-medium text-theme-card-foreground">
                               {t("settings.transactionHistory")}
                             </label>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-theme-muted">
                               {t("settings.transactionHistoryDescription")}
                             </p>
                           </div>

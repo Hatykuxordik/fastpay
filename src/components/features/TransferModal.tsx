@@ -82,6 +82,31 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
     if (!validateForm()) return;
 
+    // Validate PIN against stored PIN
+    const isGuest = typeof window !== "undefined" && localStorage.getItem("isGuestMode") === "true";
+    let storedPin = "";
+    
+    if (isGuest) {
+      const guestAccount = localStorage.getItem("guestAccount");
+      if (guestAccount) {
+        const account = JSON.parse(guestAccount);
+        storedPin = account.pin;
+      }
+    } else {
+      // For authenticated users, get PIN from user data
+      const userData = localStorage.getItem("fastpay-user-data");
+      if (userData) {
+        const user = JSON.parse(userData);
+        storedPin = user.pin;
+      }
+    }
+
+    if (formData.pin !== storedPin) {
+      setErrors({ pin: "Invalid PIN" });
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     try {
       await onTransfer(

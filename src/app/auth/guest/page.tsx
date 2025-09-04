@@ -21,12 +21,29 @@ const currencies = [
 export default function GuestPage() {
   const [guestName, setGuestName] = useState("");
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
+  const [pin, setPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleGuestLogin = async () => {
     if (!guestName.trim()) {
       toast.error("Please enter your name to continue as guest");
+      return;
+    }
+
+    if (!pin || pin.length !== 4) {
+      toast.error("Please enter a 4-digit PIN");
+      return;
+    }
+
+    if (pin !== confirmPin) {
+      toast.error("PINs do not match");
+      return;
+    }
+
+    if (!/^\d{4}$/.test(pin)) {
+      toast.error("PIN must be exactly 4 digits");
       return;
     }
 
@@ -50,6 +67,7 @@ export default function GuestPage() {
           ? 1450
           : 1000, // Starting balance for demo
       currency: selectedCurrency,
+      pin: pin, // Store the PIN for transaction validation
       isGuest: true,
       createdAt: new Date().toISOString(),
     };
@@ -190,6 +208,34 @@ export default function GuestPage() {
               </select>
             </div>
           </div>
+
+          <Input
+            label="Create 4-Digit PIN"
+            name="pin"
+            type="password"
+            value={pin}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+              setPin(value);
+            }}
+            placeholder="Enter 4-digit PIN for transactions"
+            maxLength={4}
+            required
+          />
+
+          <Input
+            label="Confirm PIN"
+            name="confirmPin"
+            type="password"
+            value={confirmPin}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+              setConfirmPin(value);
+            }}
+            placeholder="Confirm your 4-digit PIN"
+            maxLength={4}
+            required
+          />
 
           <div className="space-y-4">
             <Button type="submit" className="w-full" loading={loading}>

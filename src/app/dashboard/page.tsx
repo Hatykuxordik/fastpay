@@ -61,20 +61,60 @@ export default function DashboardPage() {
     getTransactions,
   } = isGuest ? guestAccount : authenticatedAccount;
 
+  // Create a user object for guest mode to pass to Layout
+  const effectiveUser = user || (isGuest ? {
+    id: 'guest',
+    email: 'guest@example.com',
+    user_metadata: { name: localStorage.getItem('guestName') || 'Guest User' }
+  } : null);
+
+  const getCurrencyIcon = (currency: string) => {
+    switch (currency || currentCurrency) {
+      case "EUR":
+        return Euro;
+      case "GBP":
+        return PoundSterling;
+      case "NGN":
+        return Banknote;
+      default:
+        return DollarSign;
+    }
+  };
+
+  // Add effect to update currency icon when currency changes
+  const [currencyIcon, setCurrencyIcon] = useState(() => getCurrencyIcon(currentCurrency));
+  
+  useEffect(() => {
+    setCurrencyIcon(getCurrencyIcon(currentCurrency));
+  }, [currentCurrency]);
+
   useEffect(() => {
     // Redirect to auth if not authenticated and not in guest mode
     if (!user && !isGuest) {
       router.push("/auth/signin");
       return;
     }
+  }, [user, isGuest, router]);
 
-    // Load recent transactions
-    if (account && !isGuest) {
-      getTransactions?.(5).then(setRecentTransactions);
-    } else if (account?.transactions) {
-      setRecentTransactions(account.transactions.slice(-5).reverse());
-    }
-  }, [user, isGuest, account, router]);
+  // Separate effect for loading transactions that updates when account changes
+  useEffect(() => {
+    const loadTransactions = async () => {
+      if (account && !isGuest) {
+        try {
+          const transactions = await getTransactions?.(5);
+          if (transactions) {
+            setRecentTransactions(transactions);
+          }
+        } catch (error) {
+          console.error("Failed to load transactions:", error);
+        }
+      } else if (account?.transactions) {
+        setRecentTransactions(account.transactions.slice(-5).reverse());
+      }
+    };
+
+    loadTransactions();
+  }, [account, isGuest, getTransactions]);
 
   if (loading) {
     return (
@@ -141,24 +181,39 @@ export default function DashboardPage() {
     },
   ];
 
-  const getCurrencyIcon = (currency: string) => {
-    switch (currency || currentCurrency) {
-      case "EUR":
-        return Euro;
-      case "GBP":
-        return PoundSterling;
-      case "NGN":
-        return Banknote;
-      default:
-        return DollarSign;
+  const handleModalClose = () => {
+    setActiveModal(null);
+    // Force refresh of transactions when modal closes
+    if (account && !isGuest) {
+      getTransactions?.(5).then(setRecentTransactions).catch(console.error);
+    } else if (account?.transactions) {
+      setRecentTransactions(account.transactions.slice(-5).reverse());
     }
+  };
+
+  const handleTransferComplete = async (result: any) => {
+    // The transferMoney function already updates the account state
+    // Just close the modal and let the useEffect handle the refresh
+    setActiveModal(null);
+  };
+
+  const handleTransactionComplete = async (result: any) => {
+    // The addTransaction function already updates the account state
+    // Just close the modal and let the useEffect handle the refresh
+    setActiveModal(null);
+  };
+
+  const handleLoanComplete = async (result: any) => {
+    // The requestLoan function already updates the account state
+    // Just close the modal and let the useEffect handle the refresh
+    setActiveModal(null);
   };
 
   const stats = [
     {
       title: t("dashboard.totalBalance"),
       value: formatAmountSync(account.balance || 0, "USD", currentCurrency),
-      icon: getCurrencyIcon(currentCurrency),
+      icon: currencyIcon,
       change: "+2.5%",
       changeType: "positive" as const,
     },
@@ -203,19 +258,21 @@ export default function DashboardPage() {
       change: "0",
       changeType: "neutral" as const,
     },
-  ];  return (
-    <Layout user={user}>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+  ];
+
+   return (
+    <Layout user={effectiveUser}>
+      <div className="min-h-screen bg-theme-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Section */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-bold text-theme-foreground">
               {t("dashboard.welcome", {
                 name:
-                  user?.user_metadata?.name || account.name || t("common.user"),
+                  effectiveUser?.user_metadata?.name || account.name || t("common.user"),
               })}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-theme-muted mt-2">
               {t("dashboard.account")}:{" "}
               {account.account_number || account.accountNumber}
               {isGuest && (
@@ -231,14 +288,14 @@ export default function DashboardPage() {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm"
+                className="bg-theme-card rounded-lg p-6 shadow-sm border border-theme"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-sm font-medium text-theme-muted">
                       {stat.title}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
+                    <p className="text-2xl font-bold text-theme-card-foreground mt-2">
                       {typeof stat.value === "string"
                         ? stat.value
                         : stat.value.toString()}
@@ -255,12 +312,12 @@ export default function DashboardPage() {
                         ? "text-green-600"
                         : stat.changeType === "negative"
                         ? "text-red-600"
-                        : "text-gray-600"
+                        : "text-theme-muted"
                     }`}
                   >
                     {stat.change}
                   </span>
-                  <span className="text-sm text-gray-500 ml-2">
+                  <span className="text-sm text-theme-muted ml-2">
                     from last month
                   </span>
                 </div>
@@ -302,7 +359,7 @@ export default function DashboardPage() {
 
           {/* Quick Actions */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-xl font-semibold text-theme-foreground mb-4">
               Quick Actions
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -310,17 +367,17 @@ export default function DashboardPage() {
                 <button
                   key={action.id}
                   onClick={action.action}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow text-left"
+                  className="bg-theme-card p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow text-left border border-theme"
                 >
                   <div
                     className={`${action.color} p-3 rounded-full w-fit mb-4`}
                   >
                     <action.icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                  <h3 className="font-semibold text-theme-card-foreground mb-1">
                     {action.title}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-theme-muted">
                     {action.description}
                   </p>
                 </button>
@@ -331,7 +388,7 @@ export default function DashboardPage() {
           {/* Recent Transactions */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-semibold text-theme-foreground">
                 Recent Transactions
               </h2>
               <Button variant="ghost" size="sm">
@@ -350,8 +407,8 @@ export default function DashboardPage() {
                   />
                 ))
               ) : (
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-8 text-center">
-                  <p className="text-gray-500 dark:text-gray-400">
+                <div className="bg-theme-card rounded-lg p-8 text-center border border-theme">
+                  <p className="text-theme-muted">
                     No transactions yet. Start by making a transfer or payment!
                   </p>
                 </div>
@@ -363,29 +420,57 @@ export default function DashboardPage() {
         {/* Modals */}
         <TransferModal
           isOpen={activeModal === "transfer"}
-          onClose={() => setActiveModal(null)}
-          onTransfer={transferMoney}
+          onClose={handleModalClose}
+          onTransfer={async (toAccountNumber, amount, description) => {
+            try {
+              await transferMoney(toAccountNumber, amount, description);
+              handleTransferComplete(null);
+            } catch (error) {
+              console.error("Transfer failed:", error);
+            }
+          }}
           currentBalance={account.balance || 0}
         />
 
         <BillPayModal
           isOpen={activeModal === "bill-pay"}
-          onClose={() => setActiveModal(null)}
-          onPayment={addTransaction}
+          onClose={handleModalClose}
+          onPayment={async (transaction) => {
+            try {
+              await addTransaction(transaction);
+              handleTransactionComplete(null);
+            } catch (error) {
+              console.error("Payment failed:", error);
+            }
+          }}
           currentBalance={account.balance || 0}
         />
 
         <AirtimeModal
           isOpen={activeModal === "airtime"}
-          onClose={() => setActiveModal(null)}
-          onPurchase={addTransaction}
+          onClose={handleModalClose}
+          onPurchase={async (transaction) => {
+            try {
+              await addTransaction(transaction);
+              handleTransactionComplete(null);
+            } catch (error) {
+              console.error("Airtime purchase failed:", error);
+            }
+          }}
           currentBalance={account.balance || 0}
         />
 
         <LoanModal
           isOpen={activeModal === "loan"}
-          onClose={() => setActiveModal(null)}
-          onLoanRequest={requestLoan}
+          onClose={handleModalClose}
+          onLoanRequest={async (amount, termMonths) => {
+            try {
+              await requestLoan(amount, termMonths);
+              handleLoanComplete(null);
+            } catch (error) {
+              console.error("Loan request failed:", error);
+            }
+          }}
           existingLoans={account.loans || []}
         />
       </div>

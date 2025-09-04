@@ -155,7 +155,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({
         )}
 
         {errors.general && (
-          <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+          <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-800">
             <p className="text-sm text-red-700 dark:text-red-300">
               {errors.general}
             </p>
@@ -176,7 +176,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({
         />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-500 mb-3">
+          <label className="block text-sm font-medium text-theme-foreground mb-3">
             Loan Term
           </label>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -190,10 +190,10 @@ export const LoanModal: React.FC<LoanModalProps> = ({
                 className={`p-3 rounded-lg border-2 transition-all ${
                   formData.termMonths === term.months
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                    : "border-theme hover:border-theme-muted"
                 }`}
               >
-                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-theme-card-foreground">
                   {term.label}
                 </p>
               </button>
@@ -222,7 +222,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({
                 <span className="text-orange-700 dark:text-orange-300">
                   Loan Amount
                 </span>
-                <p className="font-semibold text-lg">
+                <p className="font-semibold text-lg text-theme-foreground">
                   {formatCurrency(parseFloat(formData.amount))}
                 </p>
               </div>
@@ -230,7 +230,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({
                 <span className="text-orange-700 dark:text-orange-300">
                   Interest Rate
                 </span>
-                <p className="font-semibold text-lg">
+                <p className="font-semibold text-lg text-theme-foreground">
                   {loanDetails.interestRate}% APR
                 </p>
               </div>
@@ -238,7 +238,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({
                 <span className="text-orange-700 dark:text-orange-300">
                   Monthly Payment
                 </span>
-                <p className="font-semibold text-lg">
+                <p className="font-semibold text-lg text-theme-foreground">
                   {formatCurrency(loanDetails.monthlyPayment)}
                 </p>
               </div>
@@ -246,7 +246,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({
                 <span className="text-orange-700 dark:text-orange-300">
                   Total Interest
                 </span>
-                <p className="font-semibold text-lg">
+                <p className="font-semibold text-lg text-theme-foreground">
                   {formatCurrency(loanDetails.totalInterest)}
                 </p>
               </div>
@@ -256,7 +256,7 @@ export const LoanModal: React.FC<LoanModalProps> = ({
                 <span className="text-orange-700 dark:text-orange-300">
                   Total Repayment
                 </span>
-                <span className="font-bold text-xl">
+                <span className="font-bold text-xl text-theme-foreground">
                   {formatCurrency(loanDetails.totalPayment)}
                 </span>
               </div>
@@ -264,11 +264,11 @@ export const LoanModal: React.FC<LoanModalProps> = ({
           </div>
         )}
 
-        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-          <h4 className="font-medium text-gray-900 dark:text-white mb-2">
+        <div className="bg-theme-muted p-4 rounded-lg">
+          <h4 className="font-medium text-theme-foreground mb-2">
             Loan Terms & Conditions
           </h4>
-          <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+          <ul className="text-sm text-theme-muted space-y-1">
             <li>• Instant approval for qualified applicants</li>
             <li>• No prepayment penalties</li>
             <li>• Fixed interest rate of 15% APR</li>

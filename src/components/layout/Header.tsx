@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, Moon, Sun, User, Menu, X, Bell } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, Moon, Sun, User, Menu, X, Bell, LogOut, Settings, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { NotificationCenter } from "@/components/ui/NotificationCenter";
 import { useApp } from "@/contexts/AppContext";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 interface HeaderProps {
   user?: any;
@@ -16,23 +18,62 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { isDark, toggleTheme } = useApp();
+  const { signOut } = useAuth();
+  const router = useRouter();
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Check if user is in guest mode
+  const isGuest = typeof window !== "undefined" && localStorage.getItem("isGuestMode") === "true";
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
     onMenuToggle?.();
   };
 
+  const handleSignOut = async () => {
+    try {
+      if (isGuest) {
+        // Clear guest mode data
+        localStorage.removeItem("isGuestMode");
+        localStorage.removeItem("guestAccount");
+        localStorage.removeItem("guestName");
+        localStorage.removeItem("fastpay-user-data");
+        router.push("/");
+      } else {
+        await signOut();
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
+  };
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+      <header className="bg-theme-card border-b border-theme sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Mobile Menu Button */}
             <div className="flex items-center md:hidden">
               <button
                 onClick={toggleMobileMenu}
-                className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted transition-colors"
                 aria-label="Toggle mobile menu"
               >
                 {mobileMenuOpen ? (
@@ -55,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
                     className="h-8 w-8"
                   />
                 </div>
-                <span className="text-xl font-bold text-gray-900 dark:text-white hidden sm:block">
+                <span className="text-xl font-bold text-theme-foreground hidden sm:block">
                   <span className="text-blue-600">ast</span>pay
                 </span>
               </Link>
@@ -65,25 +106,25 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
             <nav className="hidden md:flex items-center space-x-3">
               <Link
                 href="/dashboard"
-                className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-all duration-200"
+                className="px-4 py-2 rounded-lg text-theme-muted hover:text-blue-600 hover:bg-theme-muted font-medium transition-all duration-200"
               >
                 Dashboard
               </Link>
               <Link
                 href="/transactions"
-                className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-all duration-200"
+                className="px-4 py-2 rounded-lg text-theme-muted hover:text-blue-600 hover:bg-theme-muted font-medium transition-all duration-200"
               >
                 Transactions
               </Link>
               <Link
                 href="/analytics"
-                className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-all duration-200"
+                className="px-4 py-2 rounded-lg text-theme-muted hover:text-blue-600 hover:bg-theme-muted font-medium transition-all duration-200"
               >
                 Analytics
               </Link>
               <Link
                 href="/settings"
-                className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-all duration-200"
+                className="px-4 py-2 rounded-lg text-theme-muted hover:text-blue-600 hover:bg-theme-muted font-medium transition-all duration-200"
               >
                 Settings
               </Link>
@@ -92,11 +133,11 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
             {/* Desktop Search Bar */}
             <div className="hidden lg:flex flex-1 max-w-sm mx-6">
               <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-theme-muted" />
                 <input
                   type="text"
                   placeholder="Search transactions..."
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  className="w-full pl-10 pr-4 py-2.5 border border-theme rounded-lg bg-theme-card text-theme-card-foreground placeholder-theme-muted focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
               </div>
             </div>
@@ -106,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
               {/* Mobile Search Toggle */}
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="lg:hidden p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted transition-colors"
                 aria-label="Toggle search"
               >
                 <Search className="h-5 w-5" />
@@ -115,7 +156,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted transition-colors"
                 aria-label="Toggle theme"
               >
                 {isDark ? (
@@ -130,13 +171,54 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
 
               {/* User Menu */}
               {user ? (
-                <div className="relative">
-                  <button className="flex items-center space-x-2 p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <div className="relative" ref={userMenuRef}>
+                  <button 
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center space-x-2 p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted transition-colors"
+                  >
                     <User className="h-5 w-5" />
                     <span className="hidden md:block text-sm font-medium">
-                      {user.name}
+                      {user.user_metadata?.name || user.email || "User"}
+                      {isGuest && <span className="text-xs text-yellow-600 ml-1">(Guest)</span>}
                     </span>
+                    <ChevronDown className="h-4 w-4" />
                   </button>
+                  
+                  {/* User Dropdown Menu */}
+                  {userMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-theme-card rounded-lg shadow-lg border border-theme py-1 z-50">
+                      <div className="px-4 py-2 border-b border-theme">
+                        <p className="text-sm font-medium text-theme-card-foreground">
+                          {user.user_metadata?.name || user.email || "User"}
+                        </p>
+                        {isGuest ? (
+                          <p className="text-xs text-yellow-600">Guest Mode</p>
+                        ) : (
+                          <p className="text-xs text-theme-muted">{user.email}</p>
+                        )}
+                      </div>
+                      
+                      <Link
+                        href="/settings"
+                        className="flex items-center px-4 py-2 text-sm text-theme-muted hover:bg-theme-muted hover:text-theme-foreground transition-colors"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <Settings className="h-4 w-4 mr-2" />
+                        Settings
+                      </Link>
+                      
+                      <button
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          handleSignOut();
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-theme-muted transition-colors"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        {isGuest ? "Exit Guest Mode" : "Sign Out"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex items-center space-x-2">
@@ -156,13 +238,13 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
 
         {/* Mobile Search Bar */}
         {searchOpen && (
-          <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 p-4">
+          <div className="lg:hidden border-t border-theme p-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-theme-muted" />
               <input
                 type="text"
                 placeholder="Search transactions..."
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2.5 border border-theme rounded-lg bg-theme-card text-theme-card-foreground placeholder-theme-muted focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
@@ -176,10 +258,10 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
           onClick={toggleMobileMenu}
         >
           <div
-            className="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 shadow-xl"
+            className="fixed inset-y-0 left-0 w-64 bg-theme-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-4 border-b border-theme">
               <div className="flex items-center space-x-3">
                 <Image
                   src="/fastpay-logo.svg"
@@ -188,13 +270,13 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
                   height={32}
                   className="h-8 w-8"
                 />
-                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                <span className="text-lg font-bold text-theme-card-foreground">
                   Fastpay
                 </span>
               </div>
               <button
                 onClick={toggleMobileMenu}
-                className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -202,32 +284,61 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
             <nav className="p-4 space-y-2">
               <Link
                 href="/dashboard"
-                className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-colors"
+                className="block px-4 py-3 rounded-lg text-theme-muted hover:text-blue-600 hover:bg-theme-muted font-medium transition-colors"
                 onClick={toggleMobileMenu}
               >
                 Dashboard
               </Link>
               <Link
                 href="/transactions"
-                className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-colors"
+                className="block px-4 py-3 rounded-lg text-theme-muted hover:text-blue-600 hover:bg-theme-muted font-medium transition-colors"
                 onClick={toggleMobileMenu}
               >
                 Transactions
               </Link>
               <Link
                 href="/analytics"
-                className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-colors"
+                className="block px-4 py-3 rounded-lg text-theme-muted hover:text-blue-600 hover:bg-theme-muted font-medium transition-colors"
                 onClick={toggleMobileMenu}
               >
                 Analytics
               </Link>
               <Link
                 href="/settings"
-                className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium transition-colors"
+                className="block px-4 py-3 rounded-lg text-theme-muted hover:text-blue-600 hover:bg-theme-muted font-medium transition-colors"
                 onClick={toggleMobileMenu}
               >
                 Settings
               </Link>
+              
+              {/* Mobile User Section */}
+              {user && (
+                <>
+                  <div className="border-t border-theme pt-4 mt-4">
+                    <div className="px-4 py-2">
+                      <p className="text-sm font-medium text-theme-card-foreground">
+                        {user.user_metadata?.name || user.email || "User"}
+                      </p>
+                      {isGuest ? (
+                        <p className="text-xs text-yellow-600">Guest Mode</p>
+                      ) : (
+                        <p className="text-xs text-theme-muted">{user.email}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      toggleMobileMenu();
+                      handleSignOut();
+                    }}
+                    className="flex items-center w-full px-4 py-3 rounded-lg text-red-600 hover:bg-theme-muted font-medium transition-colors"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {isGuest ? "Exit Guest Mode" : "Sign Out"}
+                  </button>
+                </>
+              )}
             </nav>
           </div>
         </div>

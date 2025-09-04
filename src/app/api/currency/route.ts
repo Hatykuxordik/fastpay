@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
 // ExchangeRate-API endpoints (free tier)
 const EXCHANGE_RATE_API_BASE = "https://v6.exchangerate-api.com/v6";
 // For demo purposes, we'll use a demo API key. In production, this should be in environment variables

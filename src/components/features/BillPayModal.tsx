@@ -32,6 +32,7 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
     billNumber: "",
     amount: "",
     customerName: "",
+    pin: "",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -69,6 +70,12 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
       newErrors.customerName = "Customer name is required";
     }
 
+    if (!formData.pin) {
+      newErrors.pin = "PIN is required for bill payments";
+    } else if (!/^\d{4}$/.test(formData.pin)) {
+      newErrors.pin = "PIN must be 4 digits";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -77,6 +84,30 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
     e.preventDefault();
 
     if (!validateForm()) return;
+
+    // Validate PIN against stored PIN
+    const isGuest = typeof window !== "undefined" && localStorage.getItem("isGuestMode") === "true";
+    let storedPin = "";
+    
+    if (isGuest) {
+      const guestAccount = localStorage.getItem("guestAccount");
+      if (guestAccount) {
+        const account = JSON.parse(guestAccount);
+        storedPin = account.pin;
+      }
+    } else {
+      // For authenticated users, get PIN from user data
+      const userData = localStorage.getItem("fastpay-user-data");
+      if (userData) {
+        const user = JSON.parse(userData);
+        storedPin = user.pin;
+      }
+    }
+
+    if (formData.pin !== storedPin) {
+      setErrors({ pin: "Invalid PIN" });
+      return;
+    }
 
     setLoading(true);
     try {
@@ -130,19 +161,19 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Pay Bills" size="md">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-gray-600 dark:bg-gray-600  p-4 rounded-lg">
+        <div className="bg-theme-muted p-4 rounded-lg">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-100 dark:text-gray-100">
+            <span className="text-sm text-theme-foreground">
               Available Balance
             </span>
-            <span className="font-semibold text-blue-900 dark:text-blue-100">
+            <span className="font-semibold text-blue-600">
               {formatAmountSync(currentBalance)}
             </span>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-500 mb-3">
+          <label className="block text-sm font-medium text-theme-foreground mb-3">
             Select Bill Category
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -154,7 +185,7 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
                 className={`p-4 rounded-lg border-2 transition-all ${
                   selectedCategory === category.id
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                    : "border-theme hover:border-theme-muted"
                 }`}
               >
                 <div
@@ -162,7 +193,7 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
                 >
                   <category.icon className="h-5 w-5 text-white" />
                 </div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-theme-card-foreground">
                   {category.name}
                 </p>
               </button>
@@ -205,8 +236,25 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
           placeholder="0.00"
         />
 
+        <Input
+          label="Transaction PIN"
+          name="pin"
+          type="password"
+          value={formData.pin}
+          onChange={(e) => {
+            const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+            setFormData(prev => ({ ...prev, pin: value }));
+            if (errors.pin) {
+              setErrors(prev => ({ ...prev, pin: "" }));
+            }
+          }}
+          error={errors.pin}
+          placeholder="Enter your 4-digit PIN"
+          maxLength={4}
+        />
+
         {formData.amount && !errors.amount && (
-          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
             <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">
               Payment Summary
             </h4>
@@ -215,7 +263,7 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
                 <span className="text-green-700 dark:text-green-300">
                   Bill Amount
                 </span>
-                <span className="font-medium">
+                <span className="font-medium text-theme-foreground">
                   {formatAmountSync(parseFloat(formData.amount) || 0)}
                 </span>
               </div>
@@ -233,9 +281,9 @@ export const BillPayModal: React.FC<BillPayModalProps> = ({
                   +{formatAmountSync((parseFloat(formData.amount) || 0) * 0.01)}
                 </span>
               </div>
-              <div className="border-t pt-2 flex justify-between font-semibold">
-                <span>Total Charge</span>
-                <span>
+              <div className="border-t border-green-200 dark:border-green-800 pt-2 flex justify-between font-semibold">
+                <span className="text-theme-foreground">Total Charge</span>
+                <span className="text-theme-foreground">
                   {formatAmountSync(parseFloat(formData.amount) || 0)}
                 </span>
               </div>

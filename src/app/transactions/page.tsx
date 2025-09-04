@@ -32,21 +32,32 @@ export default function TransactionsPage() {
       router.push('/auth/signin')
       return
     }
+  }, [user, isGuest, router])
 
-    // Load all transactions
-    if (account && !isGuest) {
-      getTransactions?.().then(transactions => {
+  // Separate effect for loading transactions that updates when account changes
+  useEffect(() => {
+    const loadTransactions = async () => {
+      if (account && !isGuest) {
+        try {
+          const transactions = await getTransactions?.()
+          if (transactions) {
+            setAllTransactions(transactions)
+            setFilteredTransactions(transactions)
+          }
+        } catch (error) {
+          console.error("Failed to load transactions:", error)
+        }
+      } else if (account?.transactions) {
+        const transactions = [...account.transactions].sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        )
         setAllTransactions(transactions)
         setFilteredTransactions(transactions)
-      })
-    } else if (account?.transactions) {
-      const transactions = [...account.transactions].sort((a, b) => 
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-      )
-      setAllTransactions(transactions)
-      setFilteredTransactions(transactions)
+      }
     }
-  }, [user, isGuest, account, router])
+
+    loadTransactions()
+  }, [account, isGuest, getTransactions])
 
   if (loading) {
     return (

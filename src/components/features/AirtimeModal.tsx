@@ -43,6 +43,7 @@ export const AirtimeModal: React.FC<AirtimeModalProps> = ({
     phoneNumber: "",
     amount: "",
     recipientName: "",
+    pin: "",
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -89,6 +90,12 @@ export const AirtimeModal: React.FC<AirtimeModalProps> = ({
       newErrors.amount = "Insufficient balance";
     }
 
+    if (!formData.pin) {
+      newErrors.pin = "PIN is required for airtime purchase";
+    } else if (!/^\d{4}$/.test(formData.pin)) {
+      newErrors.pin = "PIN must be 4 digits";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -97,6 +104,30 @@ export const AirtimeModal: React.FC<AirtimeModalProps> = ({
     e.preventDefault();
 
     if (!validateForm()) return;
+
+    // Validate PIN against stored PIN
+    const isGuest = typeof window !== "undefined" && localStorage.getItem("isGuestMode") === "true";
+    let storedPin = "";
+    
+    if (isGuest) {
+      const guestAccount = localStorage.getItem("guestAccount");
+      if (guestAccount) {
+        const account = JSON.parse(guestAccount);
+        storedPin = account.pin;
+      }
+    } else {
+      // For authenticated users, get PIN from user data
+      const userData = localStorage.getItem("fastpay-user-data");
+      if (userData) {
+        const user = JSON.parse(userData);
+        storedPin = user.pin;
+      }
+    }
+
+    if (formData.pin !== storedPin) {
+      setErrors({ pin: "Invalid PIN" });
+      return;
+    }
 
     setLoading(true);
     try {
@@ -150,19 +181,19 @@ export const AirtimeModal: React.FC<AirtimeModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Buy Airtime" size="md">
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-gray-600 dark:bg-gray-600 p-4 rounded-lg">
+        <div className="bg-theme-muted p-4 rounded-lg">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-100 dark:text-gray-100">
+            <span className="text-sm text-theme-foreground">
               Available Balance
             </span>
-            <span className="font-semibold text-gray-100 dark:text-gray-100">
+            <span className="font-semibold text-blue-600">
               {formatAmountSync(currentBalance)}
             </span>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 dark:text-gray-500 mb-3">
+          <label className="block text-sm font-medium text-theme-foreground mb-3">
             Select Network
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -174,7 +205,7 @@ export const AirtimeModal: React.FC<AirtimeModalProps> = ({
                 className={`p-4 rounded-lg border-2 transition-all ${
                   selectedNetwork === network.id
                     ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                    : "border-theme hover:border-theme-muted"
                 }`}
               >
                 <div
@@ -182,7 +213,7 @@ export const AirtimeModal: React.FC<AirtimeModalProps> = ({
                 >
                   <Smartphone className="h-5 w-5 text-white" />
                 </div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-theme-card-foreground">
                   {network.name}
                 </p>
               </button>
