@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FastPay Enhanced - Modern Banking Simulator",
+  title: "FastPay - Modern Banking Simulator",
   description:
     "An enhanced interactive web app for simulating banking operations with secure authentication, real-time updates, analytics, multi-language support, and modern features in a user-friendly interface with dark/light mode support.",
   icons: {
