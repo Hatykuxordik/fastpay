@@ -240,7 +240,7 @@ textarea::placeholder {
 input:focus,
 textarea:focus,
 select:focus {
-  outline: no;
+  outline: none;
   border-color: var(--color-primary) !important;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
 } */
