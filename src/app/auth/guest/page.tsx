@@ -126,9 +126,7 @@ export default function GuestPage() {
       `Welcome ${guestName.trim()}! Exploring in guest mode with ${currencySymbol} currency.`
     );
 
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 1000);
+    router.push("/dashboard");
   };
 
   return (

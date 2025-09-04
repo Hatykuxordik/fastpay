@@ -16,7 +16,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, user }) => {
   const pathname = usePathname()
 
   // Check if we're on a page that should show mobile bottom nav
-  const showMobileBottomNav = ['/dashboard', '/transactions', '/analytics', '/settings'].includes(pathname)
+  const showMobileBottomNav = ['/dashboard', '/transactions', '/analytics', '/settings'].includes(pathname);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">

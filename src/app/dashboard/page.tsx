@@ -212,7 +212,7 @@ export default function DashboardPage() {
   const stats = [
     {
       title: t("dashboard.totalBalance"),
-      value: formatAmountSync(account.balance || 0, "USD", currentCurrency),
+      value: formatAmountSync(account.balance || 0, account.currency, currentCurrency),
       icon: currencyIcon,
       change: "+2.5%",
       changeType: "positive" as const,
@@ -227,7 +227,7 @@ export default function DashboardPage() {
               new Date(t.date).getMonth() === new Date().getMonth()
           )
           .reduce((sum, t) => sum + t.amount, 0),
-        "USD",
+        account.currency,
         currentCurrency
       ),
       icon: ArrowDownLeft,
@@ -244,7 +244,7 @@ export default function DashboardPage() {
               new Date(t.date).getMonth() === new Date().getMonth()
           )
           .reduce((sum, t) => sum + t.amount, 0),
-        "USD",
+        account.currency,
         currentCurrency
       ),
       icon: ArrowUpRight,
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                 <div className="flex items-center mt-2">
                   <p className="text-3xl font-bold">
                     {showBalance
-                      ? formatAmountSync(account.balance || 0, "USD", currentCurrency)
+                      ? formatAmountSync(account.balance || 0, account.currency, currentCurrency)
                       : "••••••"}
                   </p>
                   <button

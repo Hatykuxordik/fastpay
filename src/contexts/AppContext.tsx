@@ -217,9 +217,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
             const parsedUserData = JSON.parse(savedUserData);
             setUserDataState((prev) => ({ ...prev, ...parsedUserData }));
             if (parsedUserData.isGuest && parsedUserData.guestCurrency) {
-              mergedSettings.preferences.currency =
-                parsedUserData.guestCurrency;
+              mergedSettings.preferences.currency = parsedUserData.guestCurrency;
             }
+            // Call updatePreference to ensure the currency is set and effects are triggered
+            updatePreference("currency", mergedSettings.preferences.currency);
           }
 
           setSettings(mergedSettings);

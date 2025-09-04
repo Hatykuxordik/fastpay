@@ -48,6 +48,15 @@ interface UserSettings {
     language: "en" | "es" | "fr";
     theme: "light" | "dark" | "system";
     lowBalanceThreshold: number;
+    dateFormat: "MM/DD/YYYY" | "DD/MM/YYYY" | "YYYY-MM-DD";
+    timeFormat: "12h" | "24h";
+    autoLogout: number;
+  };
+  display: {
+    showBalance: boolean;
+    compactView: boolean;
+    animationsEnabled: boolean;
+    soundEnabled: boolean;
   };
 }
 
@@ -59,7 +68,6 @@ export default function SettingsPage() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  // Use the new AppContext
   const {
     settings,
     updateSettings,
@@ -73,7 +81,6 @@ export default function SettingsPage() {
     setLanguage,
   } = useApp();
 
-  // Use appropriate hook based on authentication status
   const isGuest =
     !user &&
     typeof window !== "undefined" &&
@@ -99,14 +106,63 @@ export default function SettingsPage() {
     confirm: "",
   });
 
+  const [pinData, setPinData] = useState({
+    current: "",
+    new: "",
+    confirm: "",
+  });
+
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
     confirm: false,
   });
 
+  const handlePinChange = async () => {
+    if (!isGuest && !account?.pin) {
+      if (pinData.new.length !== 4 || pinData.confirm.length !== 4) {
+        toast.error("PIN must be exactly 4 digits");
+        return;
+      }
+      if (pinData.new !== pinData.confirm) {
+        toast.error("New PINs do not match");
+        return;
+      }
+    } else {
+      if (pinData.current !== account?.pin) {
+        toast.error("Current PIN is incorrect");
+        return;
+      }
+      if (pinData.new.length !== 4 || pinData.confirm.length !== 4) {
+        toast.error("New PIN must be exactly 4 digits");
+        return;
+      }
+      if (pinData.new !== pinData.confirm) {
+        toast.error("New PINs do not match");
+        return;
+      }
+    }
+
+    setLoading(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (isGuest) {
+        const updatedGuestAccount = { ...account, pin: pinData.new };
+        localStorage.setItem(
+          "guestAccount",
+          JSON.stringify(updatedGuestAccount)
+        );
+      }
+      toast.success("PIN updated successfully!");
+      setPinData({ current: "", new: "", confirm: "" });
+    } catch (error) {
+      toast.error("Failed to update PIN");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Redirect to auth if not authenticated and not in guest mode
     if (!user && !isGuest) {
       router.push("/auth/signin");
       return;
@@ -116,8 +172,7 @@ export default function SettingsPage() {
   const saveSettings = async () => {
     setLoading(true);
     try {
-      // Settings are automatically saved via AppContext, but we can add additional logic here
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 500));
       toast.success("Settings saved successfully!");
     } catch (error) {
       toast.error("Failed to save settings");
@@ -146,8 +201,6 @@ export default function SettingsPage() {
     value: any
   ) => {
     updatePreference(key, value);
-
-    // Apply changes immediately
     if (key === "theme") {
       setTheme(value);
     } else if (key === "language") {
@@ -158,7 +211,6 @@ export default function SettingsPage() {
   const handleProfileUpdate = async () => {
     setLoading(true);
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -181,7 +233,6 @@ export default function SettingsPage() {
 
     setLoading(true);
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success("Password changed successfully!");
       setPasswordData({ current: "", new: "", confirm: "" });
@@ -196,10 +247,7 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     setLoading(true);
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Clear all data
       clearAllNotifications();
       clearOfflineData();
       localStorage.clear();
@@ -250,8 +298,10 @@ export default function SettingsPage() {
       label: t("settings.tabs.notifications"),
       icon: Bell,
     },
-    { id: "privacy", label: t("settings.tabs.privacySecurity"), icon: Shield },
+    { id: "privacy", label: t("settings.tabs.privacy"), icon: Shield },
+    { id: "security", label: t("settings.tabs.security"), icon: Shield },
     { id: "preferences", label: t("settings.tabs.preferences"), icon: Palette },
+    { id: "data", label: t("settings.tabs.data"), icon: Download },
   ];
 
   const supportedCurrencies = [
@@ -265,20 +315,18 @@ export default function SettingsPage() {
 
   return (
     <Layout user={user}>
-      <div className="min-h-screen bg-theme-background">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-theme-foreground">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               {t("settings.title")}
             </h1>
-            <p className="text-theme-muted mt-2">
+            <p className="text-gray-400 dark:text-gray-800 mt-2">
               {t("settings.description")}
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sidebar */}
             <div className="lg:col-span-1">
               <nav className="space-y-2">
                 {tabs.map((tab) => (
@@ -287,8 +335,8 @@ export default function SettingsPage() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
                       activeTab === tab.id
-                        ? "bg-theme-muted text-theme-foreground"
-                        : "text-theme-muted hover:text-theme-foreground hover:bg-theme-muted"
+                        ? "bg-gray-100 text-gray-800 dark:text-gray-100 dark:bg-gray-800"
+                        : "text-gray-300 dark:text-gray-500 dark:hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-400"
                     }`}
                   >
                     <tab.icon className="h-5 w-5" />
@@ -298,16 +346,13 @@ export default function SettingsPage() {
               </nav>
             </div>
 
-            {/* Content */}
             <div className="lg:col-span-3">
-              <div className="bg-theme-card rounded-lg shadow-sm border border-theme">
-                {/* Profile Tab */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                 {activeTab === "profile" && (
                   <div className="p-6">
-                    <h2 className="text-xl font-semibold text-theme-card-foreground mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                       {t("settings.profileInfo")}
                     </h2>
-
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Input
@@ -348,7 +393,6 @@ export default function SettingsPage() {
                           disabled
                         />
                       </div>
-
                       <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
                         <div>
                           <Button
@@ -368,15 +412,12 @@ export default function SettingsPage() {
                   </div>
                 )}
 
-                {/* Notifications Tab */}
                 {activeTab === "notifications" && (
                   <div className="p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                       {t("settings.notificationPrefs")}
                     </h2>
-
                     <div className="space-y-6">
-                      {/* Browser Notifications */}
                       <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
@@ -403,8 +444,6 @@ export default function SettingsPage() {
                           )}
                         </div>
                       </div>
-
-                      {/* Notification Types */}
                       <div className="space-y-4">
                         {Object.entries(settings.notifications).map(
                           ([key, value]) => (
@@ -413,10 +452,10 @@ export default function SettingsPage() {
                               className="flex items-center justify-between"
                             >
                               <div>
-                                <label className="font-medium text-theme-card-foreground capitalize">
+                                <label className="font-medium text-gray-900 dark:text-white capitalize">
                                   {t(`settings.${key}Notifications`)}
                                 </label>
-                                <p className="text-sm text-theme-muted">
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                   {key === "lowBalance" &&
                                     t("settings.lowBalanceDescription")}
                                   {key === "transactions" &&
@@ -444,13 +483,12 @@ export default function SettingsPage() {
                                   }
                                   className="sr-only peer"
                                 />
-                                <div className="w-11 h-6 bg-theme-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-theme after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                               </label>
                             </div>
                           )
                         )}
                       </div>
-
                       <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                         <Button onClick={saveSettings}>
                           <Save className="h-4 w-4 mr-2" />
@@ -461,22 +499,19 @@ export default function SettingsPage() {
                   </div>
                 )}
 
-                {/* Privacy Tab */}
                 {activeTab === "privacy" && (
                   <div className="p-6">
-                    <h2 className="text-xl font-semibold text-theme-card-foreground mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                       {t("settings.privacySecurity")}
                     </h2>
-
                     <div className="space-y-6">
-                      {/* Privacy Settings */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <label className="font-medium text-theme-card-foreground">
+                            <label className="font-medium text-gray-900 dark:text-white">
                               {t("settings.profileVisibility")}
                             </label>
-                            <p className="text-sm text-theme-muted">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
                               {t("settings.profileVisibilityDescription")}
                             </p>
                           </div>
@@ -489,7 +524,7 @@ export default function SettingsPage() {
                                 e.target.value
                               )
                             }
-                            className="px-3 py-2 border border-theme rounded-lg bg-theme-card text-theme-card-foreground"
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                           >
                             <option value="public">{t("common.public")}</option>
                             <option value="private">
@@ -497,13 +532,12 @@ export default function SettingsPage() {
                             </option>
                           </select>
                         </div>
-
                         <div className="flex items-center justify-between">
                           <div>
-                            <label className="font-medium text-theme-card-foreground">
+                            <label className="font-medium text-gray-900 dark:text-white">
                               {t("settings.transactionHistory")}
                             </label>
-                            <p className="text-sm text-theme-muted">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
                               {t("settings.transactionHistoryDescription")}
                             </p>
                           </div>
@@ -524,7 +558,6 @@ export default function SettingsPage() {
                             <option value="hidden">{t("common.hidden")}</option>
                           </select>
                         </div>
-
                         <div className="flex items-center justify-between">
                           <div>
                             <label className="font-medium text-gray-900 dark:text-white">
@@ -550,7 +583,6 @@ export default function SettingsPage() {
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                           </label>
                         </div>
-
                         <div className="flex items-center justify-between">
                           <div>
                             <label className="font-medium text-gray-900 dark:text-white">
@@ -576,7 +608,6 @@ export default function SettingsPage() {
                             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                           </label>
                         </div>
-
                         <div className="flex items-center justify-between">
                           <div>
                             <label className="font-medium text-gray-900 dark:text-white">
@@ -603,7 +634,6 @@ export default function SettingsPage() {
                           </label>
                         </div>
                       </div>
-
                       <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                         <Button onClick={saveSettings}>
                           <Save className="h-4 w-4 mr-2" />
@@ -614,96 +644,204 @@ export default function SettingsPage() {
                   </div>
                 )}
 
-                {/* Preferences Tab */}
+                {activeTab === "security" && (
+                  <div className="p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                      {t("settings.security")}
+                    </h2>
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="font-medium text-gray-900 dark:text-white mb-2">
+                          {t("settings.pinManagement")}
+                        </h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                          {t("settings.pinDescription")}
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <Input
+                            label={t("settings.currentPin")}
+                            type="password"
+                            value={pinData.current}
+                            onChange={(e) =>
+                              setPinData((prev) => ({
+                                ...prev,
+                                current: e.target.value,
+                              }))
+                            }
+                            maxLength={4}
+                          />
+                          <Input
+                            label={t("settings.newPin")}
+                            type="password"
+                            value={pinData.new}
+                            onChange={(e) =>
+                              setPinData((prev) => ({
+                                ...prev,
+                                new: e.target.value,
+                              }))
+                            }
+                            maxLength={4}
+                          />
+                          <Input
+                            label={t("settings.confirmNewPin")}
+                            type="password"
+                            value={pinData.confirm}
+                            onChange={(e) =>
+                              setPinData((prev) => ({
+                                ...prev,
+                                confirm: e.target.value,
+                              }))
+                            }
+                            maxLength={4}
+                          />
+                        </div>
+                        <Button
+                          onClick={handlePinChange}
+                          loading={loading}
+                          className="mt-6"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          {t("settings.updatePin")}
+                        </Button>
+                      </div>
+                      <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <label className="font-medium text-gray-900 dark:text-white">
+                              {t("settings.twoFactorAuth")}
+                            </label>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {t("settings.twoFactorAuthDescription")}
+                            </p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={settings.privacy.twoFactorAuth}
+                              onChange={(e) =>
+                                handleSettingChange(
+                                  "privacy",
+                                  "twoFactorAuth",
+                                  e.target.checked
+                                )
+                              }
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <label className="font-medium text-gray-900 dark:text-white">
+                              {t("settings.biometricAuth")}
+                            </label>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {t("settings.biometricAuthDescription")}
+                            </p>
+                          </div>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={settings.privacy.biometricAuth}
+                              onChange={(e) =>
+                                handleSettingChange(
+                                  "privacy",
+                                  "biometricAuth",
+                                  e.target.checked
+                                )
+                              }
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {activeTab === "preferences" && (
                   <div className="p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                       {t("settings.preferences")}
                     </h2>
-
                     <div className="space-y-6">
-                      {/* Currency Preference */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <label className="font-medium text-gray-900 dark:text-white">
-                            {t("settings.currency")}
-                          </label>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {t("settings.currencyDescription")}
-                          </p>
-                        </div>
+                      <div>
+                        <label
+                          htmlFor="currency"
+                          className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+                        >
+                          {t("settings.currency")}
+                        </label>
                         <select
+                          id="currency"
                           value={settings.preferences.currency}
                           onChange={(e) =>
                             handlePreferenceChange("currency", e.target.value)
                           }
-                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white w-full"
                         >
-                          {supportedCurrencies.map((c) => (
-                            <option key={c.code} value={c.code}>
-                              {c.code}
+                          {supportedCurrencies.map((currency) => (
+                            <option key={currency.code} value={currency.code}>
+                              {currency.code}
                             </option>
                           ))}
                         </select>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {t("settings.currencyDescription")}
+                        </p>
                       </div>
-
-                      {/* Language Preference */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <label className="font-medium text-gray-900 dark:text-white">
-                            {t("settings.language")}
-                          </label>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {t("settings.languageDescription")}
-                          </p>
-                        </div>
+                      <div>
+                        <label
+                          htmlFor="language"
+                          className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+                        >
+                          {t("settings.language")}
+                        </label>
                         <select
+                          id="language"
                           value={settings.preferences.language}
                           onChange={(e) =>
                             handlePreferenceChange("language", e.target.value)
                           }
-                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white w-full"
                         >
                           <option value="en">English</option>
                           <option value="es">Español</option>
                           <option value="fr">Français</option>
                         </select>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {t("settings.languageDescription")}
+                        </p>
                       </div>
-
-                      {/* Theme Preference */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <label className="font-medium text-gray-900 dark:text-white">
-                            {t("settings.theme")}
-                          </label>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {t("settings.themeDescription")}
-                          </p>
-                        </div>
+                      <div>
+                        <label
+                          htmlFor="theme"
+                          className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+                        >
+                          {t("settings.theme")}
+                        </label>
                         <select
+                          id="theme"
                           value={settings.preferences.theme}
                           onChange={(e) =>
                             handlePreferenceChange("theme", e.target.value)
                           }
-                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white w-full"
                         >
-                          <option value="light">Light</option>
-                          <option value="dark">Dark</option>
-                          <option value="system">System</option>
+                          <option value="light">{t("common.light")}</option>
+                          <option value="dark">{t("common.dark")}</option>
+                          <option value="system">{t("common.system")}</option>
                         </select>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {t("settings.themeDescription")}
+                        </p>
                       </div>
-
-                      {/* Low Balance Threshold */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <label className="font-medium text-gray-900 dark:text-white">
-                            {t("settings.lowBalanceThreshold")}
-                          </label>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {t("settings.lowBalanceThresholdDescription")}
-                          </p>
-                        </div>
+                      <div>
                         <Input
+                          label={t("settings.lowBalanceThreshold")}
                           type="number"
                           value={settings.preferences.lowBalanceThreshold}
                           onChange={(e) =>
@@ -714,8 +852,176 @@ export default function SettingsPage() {
                           }
                           className="w-24"
                         />
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {t("settings.lowBalanceThresholdDescription")}
+                        </p>
                       </div>
-
+                      <div>
+                        <label
+                          htmlFor="dateFormat"
+                          className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+                        >
+                          {t("settings.dateFormat")}
+                        </label>
+                        <select
+                          id="dateFormat"
+                          value={settings.preferences.dateFormat}
+                          onChange={(e) =>
+                            handlePreferenceChange("dateFormat", e.target.value)
+                          }
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white w-full"
+                        >
+                          <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                          <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                          <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="timeFormat"
+                          className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
+                        >
+                          {t("settings.timeFormat")}
+                        </label>
+                        <select
+                          id="timeFormat"
+                          value={settings.preferences.timeFormat}
+                          onChange={(e) =>
+                            handlePreferenceChange("timeFormat", e.target.value)
+                          }
+                          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white w-full"
+                        >
+                          <option value="12h">12-hour (AM/PM)</option>
+                          <option value="24h">24-hour</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Input
+                          label={t("settings.autoLogout")}
+                          type="number"
+                          value={settings.preferences.autoLogout}
+                          onChange={(e) =>
+                            handlePreferenceChange(
+                              "autoLogout",
+                              Number(e.target.value)
+                            )
+                          }
+                          min={1}
+                          max={120}
+                          step={5}
+                          className="w-24"
+                        />
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                          {t("settings.autoLogoutDescription")}
+                        </p>
+                      </div>
+                      <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <h3 className="font-medium text-gray-900 dark:text-white mb-4">
+                          {t("settings.displaySettings")}
+                        </h3>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <label className="font-medium text-gray-900 dark:text-white">
+                                {t("settings.showBalance")}
+                              </label>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {t("settings.showBalanceDescription")}
+                              </p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={settings.display.showBalance}
+                                onChange={(e) =>
+                                  handleSettingChange(
+                                    "display",
+                                    "showBalance",
+                                    e.target.checked
+                                  )
+                                }
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <label className="font-medium text-gray-900 dark:text-white">
+                                {t("settings.compactView")}
+                              </label>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {t("settings.compactViewDescription")}
+                              </p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={settings.display.compactView}
+                                onChange={(e) =>
+                                  handleSettingChange(
+                                    "display",
+                                    "compactView",
+                                    e.target.checked
+                                  )
+                                }
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <label className="font-medium text-gray-900 dark:text-white">
+                                {t("settings.animationsEnabled")}
+                              </label>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {t("settings.animationsEnabledDescription")}
+                              </p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={settings.display.animationsEnabled}
+                                onChange={(e) =>
+                                  handleSettingChange(
+                                    "display",
+                                    "animationsEnabled",
+                                    e.target.checked
+                                  )
+                                }
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <label className="font-medium text-gray-900 dark:text-white">
+                                {t("settings.soundEnabled")}
+                              </label>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {t("settings.soundEnabledDescription")}
+                              </p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={settings.display.soundEnabled}
+                                onChange={(e) =>
+                                  handleSettingChange(
+                                    "display",
+                                    "soundEnabled",
+                                    e.target.checked
+                                  )
+                                }
+                                className="sr-only peer"
+                              />
+                              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
                       <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                         <Button onClick={saveSettings}>
                           <Save className="h-4 w-4 mr-2" />
@@ -726,15 +1032,12 @@ export default function SettingsPage() {
                   </div>
                 )}
 
-                {/* Data & Export Tab */}
                 {activeTab === "data" && (
                   <div className="p-6">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                       {t("settings.dataExport")}
                     </h2>
-
                     <div className="space-y-6">
-                      {/* Export Data */}
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="font-medium text-gray-900 dark:text-white">
@@ -749,8 +1052,6 @@ export default function SettingsPage() {
                           {t("common.export")}
                         </Button>
                       </div>
-
-                      {/* Clear Offline Data */}
                       <div className="flex items-center justify-between">
                         <div>
                           <label className="font-medium text-gray-900 dark:text-white">
@@ -768,8 +1069,6 @@ export default function SettingsPage() {
                           {t("common.clear")}
                         </Button>
                       </div>
-
-                      {/* Delete Account */}
                       <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
                         <div>
                           <label className="font-medium text-red-600 dark:text-red-400">
@@ -794,122 +1093,126 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        <Modal
+          isOpen={showPasswordModal}
+          onClose={() => setShowPasswordModal(false)}
+          title={t("settings.changePassword")}
+        >
+          <div className="space-y-4">
+            <Input
+              label={t("settings.currentPassword")}
+              type={showPasswords.current ? "text" : "password"}
+              value={passwordData.current}
+              onChange={(e) =>
+                setPasswordData((prev) => ({
+                  ...prev,
+                  current: e.target.value,
+                }))
+              }
+              icon={
+                showPasswords.current ? (
+                  <EyeOff
+                    className="h-5 w-5 text-gray-400 cursor-pointer"
+                    onClick={() =>
+                      setShowPasswords((prev) => ({ ...prev, current: false }))
+                    }
+                  />
+                ) : (
+                  <Eye
+                    className="h-5 w-5 text-gray-400 cursor-pointer"
+                    onClick={() =>
+                      setShowPasswords((prev) => ({ ...prev, current: true }))
+                    }
+                  />
+                )
+              }
+            />
+            <Input
+              label={t("settings.newPassword")}
+              type={showPasswords.new ? "text" : "password"}
+              value={passwordData.new}
+              onChange={(e) =>
+                setPasswordData((prev) => ({ ...prev, new: e.target.value }))
+              }
+              icon={
+                showPasswords.new ? (
+                  <EyeOff
+                    className="h-5 w-5 text-gray-400 cursor-pointer"
+                    onClick={() =>
+                      setShowPasswords((prev) => ({ ...prev, new: false }))
+                    }
+                  />
+                ) : (
+                  <Eye
+                    className="h-5 w-5 text-gray-400 cursor-pointer"
+                    onClick={() =>
+                      setShowPasswords((prev) => ({ ...prev, new: true }))
+                    }
+                  />
+                )
+              }
+            />
+            <Input
+              label={t("settings.confirmNewPassword")}
+              type={showPasswords.confirm ? "text" : "password"}
+              value={passwordData.confirm}
+              onChange={(e) =>
+                setPasswordData((prev) => ({
+                  ...prev,
+                  confirm: e.target.value,
+                }))
+              }
+              icon={
+                showPasswords.confirm ? (
+                  <EyeOff
+                    className="h-5 w-5 text-gray-400 cursor-pointer"
+                    onClick={() =>
+                      setShowPasswords((prev) => ({ ...prev, confirm: false }))
+                    }
+                  />
+                ) : (
+                  <Eye
+                    className="h-5 w-5 text-gray-400 cursor-pointer"
+                    onClick={() =>
+                      setShowPasswords((prev) => ({ ...prev, confirm: true }))
+                    }
+                  />
+                )
+              }
+            />
+          </div>
+          <div className="mt-6 flex justify-end space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowPasswordModal(false)}
+            >
+              {t("common.cancel")}
+            </Button>
+            <Button onClick={handlePasswordChange} loading={loading}>
+              {t("common.change")}
+            </Button>
+          </div>
+        </Modal>
+
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          title={t("settings.confirmDeleteAccount")}
+        >
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {t("settings.deleteAccountWarning")}
+          </p>
+          <div className="mt-6 flex justify-end space-x-3">
+            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteAccount}>
+              {t("common.delete")}
+            </Button>
+          </div>
+        </Modal>
       </div>
-
-      {/* Change Password Modal */}
-      <Modal
-        isOpen={showPasswordModal}
-        onClose={() => setShowPasswordModal(false)}
-        title={t("settings.changePassword")}
-      >
-        <div className="space-y-4">
-          <Input
-            label={t("settings.currentPassword")}
-            type={showPasswords.current ? "text" : "password"}
-            value={passwordData.current}
-            onChange={(e) =>
-              setPasswordData((prev) => ({
-                ...prev,
-                current: e.target.value,
-              }))
-            }
-            icon={
-              showPasswords.current ? (
-                <EyeOff
-                  className="h-5 w-5 text-gray-400 cursor-pointer"
-                  onClick={() =>
-                    setShowPasswords((prev) => ({ ...prev, current: false }))
-                  }
-                />
-              ) : (
-                <Eye
-                  className="h-5 w-5 text-gray-400 cursor-pointer"
-                  onClick={() =>
-                    setShowPasswords((prev) => ({ ...prev, current: true }))
-                  }
-                />
-              )
-            }
-          />
-          <Input
-            label={t("settings.newPassword")}
-            type={showPasswords.new ? "text" : "password"}
-            value={passwordData.new}
-            onChange={(e) =>
-              setPasswordData((prev) => ({ ...prev, new: e.target.value }))
-            }
-            icon={
-              showPasswords.new ? (
-                <EyeOff
-                  className="h-5 w-5 text-gray-400 cursor-pointer"
-                  onClick={() =>
-                    setShowPasswords((prev) => ({ ...prev, new: false }))
-                  }
-                />
-              ) : (
-                <Eye
-                  className="h-5 w-5 text-gray-400 cursor-pointer"
-                  onClick={() =>
-                    setShowPasswords((prev) => ({ ...prev, new: true }))
-                  }
-                />
-              )
-            }
-          />
-          <Input
-            label={t("settings.confirmNewPassword")}
-            type={showPasswords.confirm ? "text" : "password"}
-            value={passwordData.confirm}
-            onChange={(e) =>
-              setPasswordData((prev) => ({ ...prev, confirm: e.target.value }))
-            }
-            icon={
-              showPasswords.confirm ? (
-                <EyeOff
-                  className="h-5 w-5 text-gray-400 cursor-pointer"
-                  onClick={() =>
-                    setShowPasswords((prev) => ({ ...prev, confirm: false }))
-                  }
-                />
-              ) : (
-                <Eye
-                  className="h-5 w-5 text-gray-400 cursor-pointer"
-                  onClick={() =>
-                    setShowPasswords((prev) => ({ ...prev, confirm: true }))
-                  }
-                />
-              )
-            }
-          />
-        </div>
-        <div className="mt-6 flex justify-end space-x-3">
-          <Button variant="outline" onClick={() => setShowPasswordModal(false)}>
-            {t("common.cancel")}
-          </Button>
-          <Button onClick={handlePasswordChange} loading={loading}>
-            {t("common.change")}
-          </Button>
-        </div>
-      </Modal>
-
-      {/* Delete Account Confirmation Modal */}
-      <Modal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        title={t("settings.confirmDeleteAccount")}
-      >
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          {t("settings.deleteAccountWarning")}
-        </p>
-        <div className="mt-6 flex justify-end space-x-3">
-          <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
-            {t("common.cancel")}
-          </Button>
-          <Button variant="destructive" onClick={handleDeleteAccount}>
-            {t("common.delete")}
-          </Button>
-        </div>
-      </Modal>
     </Layout>
   );
 }
