@@ -45,18 +45,18 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
 
             {/* Logo and Brand */}
             <div className="flex items-center mr-4">
-              <Link href="/" className="flex items-center space-x-3">
+              <Link href="/" className="flex items-center -space-x-1.5">
                 <div className="relative">
                   <Image
                     src="/fastpay-logo.svg"
                     alt="Fastpay"
                     width={40}
                     height={40}
-                    className="h-10 w-10"
+                    className="h-8 w-8"
                   />
                 </div>
                 <span className="text-xl font-bold text-gray-900 dark:text-white hidden sm:block">
-                  Fastpay
+                  <span className="text-blue-600">ast</span>pay
                 </span>
               </Link>
             </div>

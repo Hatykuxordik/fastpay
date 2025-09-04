@@ -69,7 +69,7 @@ export default function HomePage() {
       <header className="border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center -space-x-1.5">
               <Image
                 src="/fastpay-logo.png"
                 alt="Fastpay"
@@ -78,7 +78,7 @@ export default function HomePage() {
                 className="h-8 w-8"
               />
               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                Fastpay
+                <span className="text-blue-600">ast</span>pay
               </span>
             </div>
             <div className="flex items-center space-x-4">
