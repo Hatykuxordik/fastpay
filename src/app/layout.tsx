@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description:
     "An enhanced interactive web app for simulating banking operations with secure authentication, real-time updates, analytics, multi-language support, and modern features in a user-friendly interface with dark/light mode support.",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.ico",
   },
 };
 
