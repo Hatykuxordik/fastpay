@@ -362,7 +362,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
                     className="flex items-center w-full px-4 py-3 rounded-lg text-red-600 hover:bg-theme-muted font-medium transition-colors"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                    {isGuest ? "Exit Guest Mode" : "Sign Out"}
+                    {isGuest ? "Log out" : "Sign Out"}
                   </button>
                 </>
               )}
