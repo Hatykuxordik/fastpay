@@ -82,7 +82,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
 
   return (
     <>
-      <header className="fixed md:sticky top-0 left-0 right-0 z-50 bg-theme-card border-b border-theme">
+      <header className="fixed md:sticky top-0 left-0 right-0 z-99999 bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 md:h-16">
             {/* Mobile Menu Button */}
