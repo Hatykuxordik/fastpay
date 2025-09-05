@@ -4,7 +4,18 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, Moon, Sun, User, Menu, X, Bell, LogOut, Settings, ChevronDown } from "lucide-react";
+import {
+  Search,
+  Moon,
+  Sun,
+  User,
+  Menu,
+  X,
+  Bell,
+  LogOut,
+  Settings,
+  ChevronDown,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { NotificationCenter } from "@/components/ui/NotificationCenter";
 import { useApp } from "@/contexts/AppContext";
@@ -25,7 +36,9 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Check if user is in guest mode
-  const isGuest = typeof window !== "undefined" && localStorage.getItem("isGuestMode") === "true";
+  const isGuest =
+    typeof window !== "undefined" &&
+    localStorage.getItem("isGuestMode") === "true";
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -53,7 +66,10 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
   // Close user menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
         setUserMenuOpen(false);
       }
     };
@@ -66,7 +82,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
 
   return (
     <>
-      <header className="bg-theme-card border-b border-theme fixed md:sticky top-0 left-0 right-0 z-50">
+      <header className="fixed md:sticky top-0 left-0 right-0 z-50 bg-theme-card border-b border-theme">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 md:h-16">
             {/* Mobile Menu Button */}
@@ -172,18 +188,22 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
               {/* User Menu */}
               {user ? (
                 <div className="relative" ref={userMenuRef}>
-                  <button 
+                  <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
                     className="flex items-center space-x-2 p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted transition-colors"
                   >
                     <User className="h-5 w-5" />
                     <span className="hidden md:block text-sm font-medium">
                       {user.user_metadata?.name || user.email || "User"}
-                      {isGuest && <span className="text-xs text-yellow-600 ml-1">(Guest)</span>}
+                      {isGuest && (
+                        <span className="text-xs text-yellow-600 ml-1">
+                          (Guest)
+                        </span>
+                      )}
                     </span>
                     <ChevronDown className="h-4 w-4" />
                   </button>
-                  
+
                   {/* User Dropdown Menu */}
                   {userMenuOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-theme-card rounded-lg shadow-lg border border-theme py-1 z-50">
@@ -194,10 +214,12 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
                         {isGuest ? (
                           <p className="text-xs text-yellow-600">Guest Mode</p>
                         ) : (
-                          <p className="text-xs text-theme-muted">{user.email}</p>
+                          <p className="text-xs text-theme-muted">
+                            {user.email}
+                          </p>
                         )}
                       </div>
-                      
+
                       <Link
                         href="/settings"
                         className="flex items-center px-4 py-2 text-sm text-theme-muted hover:bg-theme-muted hover:text-theme-foreground transition-colors"
@@ -206,7 +228,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
                         <Settings className="h-4 w-4 mr-2" />
                         Settings
                       </Link>
-                      
+
                       <button
                         onClick={() => {
                           setUserMenuOpen(false);
@@ -254,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-black bg-opacity-50"
+          className="md:hidden fixed inset-0 z-40 bg-gray-500/75"
           onClick={toggleMobileMenu}
         >
           <div
@@ -298,7 +320,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
               >
                 Settings
               </Link>
-              
+
               {/* Mobile User Section */}
               {user && (
                 <>
@@ -314,7 +336,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
                       )}
                     </div>
                   </div>
-                  
+
                   <button
                     onClick={() => {
                       toggleMobileMenu();
