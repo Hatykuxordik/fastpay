@@ -285,7 +285,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
             className="fixed inset-y-0 left-0 w-64 bg-theme-card shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 border-theme">
+            <div className="flex items-center border-b p-4 border-theme">
               <button
                 onClick={toggleMobileMenu}
                 className="p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted"
