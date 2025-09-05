@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 md:h-16">
             {/* Mobile Menu Button */}
-            <div className="flex items-center md:hidden">
+            <div className="flex items-center -space-x-4 md:hidden">
               <button
                 onClick={toggleMobileMenu}
                 className="p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted transition-colors"
@@ -276,7 +276,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-gray-500/75"
+          className="md:hidden fixed inset-0 z-40 bg-gray-500/90 backdrop-blur-sm"
           onClick={toggleMobileMenu}
         >
           <div
