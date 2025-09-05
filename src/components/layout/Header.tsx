@@ -292,6 +292,21 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
               >
                 <X className="h-5 w-5" />
               </button>
+
+              <Link href="/" className="flex items-center -space-x-1.5">
+                <div className="relative">
+                  <Image
+                    src="/fastpay-logo.svg"
+                    alt="Fastpay"
+                    width={40}
+                    height={40}
+                    className="h-8 w-8"
+                  />
+                </div>
+                <span className="text-xl font-bold text-theme-foreground">
+                  <span className="text-blue-600">ast</span>pay
+                </span>
+              </Link>
             </div>
             <nav className="p-4 space-y-2">
               <Link
