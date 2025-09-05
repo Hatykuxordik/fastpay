@@ -86,36 +86,38 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 md:h-16">
             {/* Mobile Menu Button */}
-            <div className="flex items-center -space-x-4 md:hidden">
-              <button
-                onClick={toggleMobileMenu}
-                className="p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted transition-colors"
-                aria-label="Toggle mobile menu"
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-6 w-6" />
-                ) : (
-                  <Menu className="h-6 w-6" />
-                )}
-              </button>
-            </div>
+            <div className="flex items-center">
+              <div className="flex items-center md:hidden">
+                <button
+                  onClick={toggleMobileMenu}
+                  className="p-2 rounded-lg text-theme-muted hover:text-theme-foreground hover:bg-theme-muted transition-colors"
+                  aria-label="Toggle mobile menu"
+                >
+                  {mobileMenuOpen ? (
+                    <X className="h-6 w-6" />
+                  ) : (
+                    <Menu className="h-6 w-6" />
+                  )}
+                </button>
+              </div>
 
-            {/* Logo and Brand */}
-            <div className="flex items-center mr-4">
-              <Link href="/" className="flex items-center -space-x-1.5">
-                <div className="relative">
-                  <Image
-                    src="/fastpay-logo.svg"
-                    alt="Fastpay"
-                    width={40}
-                    height={40}
-                    className="h-8 w-8"
-                  />
-                </div>
-                <span className="text-xl font-bold text-theme-foreground">
-                  <span className="text-blue-600">ast</span>pay
-                </span>
-              </Link>
+              {/* Logo and Brand */}
+              <div className="flex items-center mr-4">
+                <Link href="/" className="flex items-center -space-x-1.5">
+                  <div className="relative">
+                    <Image
+                      src="/fastpay-logo.svg"
+                      alt="Fastpay"
+                      width={40}
+                      height={40}
+                      className="h-8 w-8"
+                    />
+                  </div>
+                  <span className="text-xl font-bold text-theme-foreground">
+                    <span className="text-blue-600">ast</span>pay
+                  </span>
+                </Link>
+              </div>
             </div>
 
             {/* Desktop Navigation */}
@@ -276,7 +278,7 @@ export const Header: React.FC<HeaderProps> = ({ user, onMenuToggle }) => {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-gray-500/90 backdrop-blur-sm"
+          className="md:hidden fixed inset-0 z-40 bg-gray-500/80 backdrop-blur-sm"
           onClick={toggleMobileMenu}
         >
           <div
